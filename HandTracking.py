@@ -88,16 +88,14 @@ def main():
                     result = model.predict(np.array([pre_process(clone)]))
                     result = ascii_lowercase[np.argmax(result)]
                     clone = cv2.flip(clone, 1)
-                    cv2.putText(clone, word + result, (0, 200), cv2.FONT_HERSHEY_COMPLEX_SMALL, 4, (255, 255, 255), 2,
+                    cv2.putText(clone, word + result, (0, 200), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (255, 255, 255), 2,
+                                cv2.LINE_AA)
+                    cv2.putText(clone, similar, (0, 240), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
                                 cv2.LINE_AA)
                     cv2.imshow("clone", clone)
                     cv2.rectangle(image, square_pt1, square_pt2, (0, 255, 0), 1)
-            else:
-                cv2.putText(image, word, (0, 200), cv2.FONT_HERSHEY_SIMPLEX, 4, (255, 255, 255), 2,
-                            cv2.LINE_AA)
 
-            cv2.putText(image, similar, (0, 250), cv2.FONT_HERSHEY_SIMPLEX, 4, (255, 255, 255), 2,
-                        cv2.LINE_AA)
+
 
             # Flip the image horizontally for a selfie-view display.
             cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))

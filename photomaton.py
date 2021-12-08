@@ -2,15 +2,17 @@ import cv2
 import os
 import time
 import uuid
-import numpy
 
+import numpy as np
+
+DEVICE = 0
 IMAGE_SIZE = 256
 IMAGES_PATH = os.path.join(os.getcwd(), 'img')
 LABELS = [chr(i) for i in range(97, 123)]
-NUMBER_IMG = 15
+NUMBER_IMG = 1
 
 
-def take_picture(img: numpy.ndarray, path: str, label: str):
+def take_picture(img: np.ndarray, path: str, label: str):
     pt1, pt2 = get_coord(*img.shape)
     pt1_x, pt1_y = pt1
     pt2_x, pt2_y = pt2
@@ -31,14 +33,16 @@ def get_coord(height: int, width: int, color: int):
     return pt1, pt2
 
 
-def draw_rectangle(img: numpy.ndarray):
+def draw_rectangle(img: np.ndarray):
     pt1, pt2 = get_coord(*img.shape)
     rectangle = cv2.rectangle(img, pt1, pt2, (0, 255, 0), 1)
     return rectangle
 
 
+
+
 def main():
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(DEVICE)
     index = 0
     number_img = 0
     rafal = False
@@ -50,16 +54,16 @@ def main():
         key = cv2.waitKey(1)
         if key == 27:  # esc stop code
             break
-        elif key == 32:  # space for take picture
+        elif key == 32 and not rafal:  # space for take picture
             rafal = True
             print(f"Starting to take image with '{LABELS[index]}'.")
-        elif key == 113:
+        elif key == 113 and not rafal:
             last_index = index
             index -= 1
             if 0 > index:
                 index = 0
             print(f"Before: {LABELS[last_index]}, now {LABELS[index]}")
-        elif key == 100:
+        elif key == 100 and not rafal:
             previous_index = index
             index += 1
             if index == len(LABELS):
@@ -76,4 +80,5 @@ def main():
 
 
 if __name__ == '__main__':
+    print()
     main()

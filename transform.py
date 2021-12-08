@@ -10,7 +10,7 @@ for i, filename in enumerate(files):
         print(f'Files {i}/{len(files)}')
 
     _, folder, fn = filename.split(os.path.sep)
-    dest = Path('img2') / folder / fn
+    dest = Path('dataset') / folder / fn
     dest.parent.mkdir(parents=True, exist_ok=True)
     img = Image.open(filename).convert('L')
     img.resize((32, 32)).save(dest)

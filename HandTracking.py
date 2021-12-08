@@ -48,24 +48,7 @@ def pre_process(frame):
 
 
 def create_model():
-    model = Sequential([
-        layers.Rescaling(1 / 255),
-        layers.Conv2D(32, 3, activation='relu', input_shape=(32, 32, 3)),
-        layers.MaxPooling2D(),
-        layers.Conv2D(64, 3, activation='relu'),
-        layers.MaxPooling2D(),
-        layers.Conv2D(64, 3, activation='relu'),
-        layers.Flatten(),
-        layers.Dense(64, activation='relu'),
-        layers.Dense(26)
-    ])
-    model.compile(
-        optimizer='adam',
-        loss=tf.losses.SparseCategoricalCrossentropy(from_logits=True),
-        metrics=['accuracy']
-    )
-    model.load_weights("data/cp.ckpt")
-    return model
+    return keras.models.load_model('training_model')
 
 
 def main():
@@ -99,13 +82,15 @@ def main():
                     center_x, center_y = center(pt1, pt2, h, w)
                     square_pt1 = (center_x - (IMG_SIZE // 2), center_y - (IMG_SIZE // 2))
                     square_pt2 = (center_x + (IMG_SIZE // 2), center_y + (IMG_SIZE // 2))
-                    clone = image.copy()[square_pt1[1]:square_pt2[1], square_pt1[0]:square_pt2[0]]
+                    clone = image[square_pt1[1]:square_pt2[1], square_pt1[0]:square_pt2[0]].copy()
 
                     # print(pre_process(clone).shape)
-                    result = model.predict([pre_process(clone)])
+                    result = model.predict(np.array([pre_process(clone)]))
                     result = ascii_lowercase[np.argmax(result)]
-                    cv2.putText(image, result, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 4, (255, 255, 255), 2,
-                                cv2.LINE_AA)
+                    clone = cv2.flip(clone, 1)
+                    cv2.putText(clone, result, (0, 200), cv2.FONT_HERSHEY_COMPLEX_SMALL, 4, (255, 255, 255), 2,
+                               cv2.LINE_AA)
+                    cv2.imshow("clone", clone)
                     cv2.rectangle(image, square_pt1, square_pt2, (0, 255, 0), 1)
             # print(hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP])
 

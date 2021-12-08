@@ -1,0 +1,6 @@
+tensorflow
+mediapipe
+opencv-python
+pillow
+numpy
+levenshtein_cpp

@@ -1,17 +1,13 @@
 import math
-import uuid
+from string import ascii_lowercase
+
 import cv2
 import mediapipe as mp
-import time
-import os
-from pprint import pprint
 import numpy as np
-from string import ascii_lowercase
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import Sequential, layers
-from tensorflow.keras.callbacks import ModelCheckpoint
-from tensorflow.keras.preprocessing.image import img_to_array, load_img
+
+from words import Dictionnary
 
 IMG_SIZE = 256
 IMG_RESIZE = 32
@@ -54,6 +50,9 @@ def create_model():
 def main():
     cap = cv2.VideoCapture(0)
     model = create_model()
+    dic = Dictionnary("french.txt")
+
+    word = ""
     with mp_hands.Hands(
             max_num_hands=1,
             model_complexity=0,
@@ -88,16 +87,26 @@ def main():
                     result = model.predict(np.array([pre_process(clone)]))
                     result = ascii_lowercase[np.argmax(result)]
                     clone = cv2.flip(clone, 1)
-                    cv2.putText(clone, result, (0, 200), cv2.FONT_HERSHEY_COMPLEX_SMALL, 4, (255, 255, 255), 2,
-                               cv2.LINE_AA)
+                    cv2.putText(clone, word + result, (0, 200), cv2.FONT_HERSHEY_COMPLEX_SMALL, 4, (255, 255, 255), 2,
+                                cv2.LINE_AA)
                     cv2.imshow("clone", clone)
                     cv2.rectangle(image, square_pt1, square_pt2, (0, 255, 0), 1)
-            # print(hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP])
+            else:
+                cv2.putText(image, word, (0, 200), cv2.FONT_HERSHEY_SIMPLEX, 4, (255, 255, 255), 2,
+                            cv2.LINE_AA)
+
+            similar = dic.get_nearest_word(word)
+            cv2.putText(image, similar, (0, 250), cv2.FONT_HERSHEY_SIMPLEX, 4, (255, 255, 255), 2,
+                        cv2.LINE_AA)
 
             # Flip the image horizontally for a selfie-view display.
             cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
-            if cv2.waitKey(5) & 0xFF == 27:
+            key = cv2.waitKey(5)
+            if key == 32:
+                word += result
+            elif key == 27:
                 break
+
         cap.release()
 
 

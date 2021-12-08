@@ -53,6 +53,7 @@ def main():
     dic = Dictionnary("french.txt")
 
     word = ""
+    similar = ""
     with mp_hands.Hands(
             max_num_hands=1,
             model_complexity=0,
@@ -95,7 +96,6 @@ def main():
                 cv2.putText(image, word, (0, 200), cv2.FONT_HERSHEY_SIMPLEX, 4, (255, 255, 255), 2,
                             cv2.LINE_AA)
 
-            similar = dic.get_nearest_word(word)
             cv2.putText(image, similar, (0, 250), cv2.FONT_HERSHEY_SIMPLEX, 4, (255, 255, 255), 2,
                         cv2.LINE_AA)
 
@@ -104,6 +104,7 @@ def main():
             key = cv2.waitKey(5)
             if key == 32:
                 word += result
+                similar = dic.get_nearest_word(word)
             elif key == 27:
                 break
 
